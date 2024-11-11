@@ -1,11 +1,11 @@
-// src/pages/RegisterPage.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import backgroundImage from '../assets/bg.jpg'; // Update the path to your background image
 
 function RegisterPage() {
+  const { login } = useAuth();  // Get the login function from context
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -46,7 +46,8 @@ function RegisterPage() {
       });
 
       if (response.status === 201) {
-        navigate('/login');
+        login(); // Update authentication state
+        navigate('/profile'); // Redirect to the profile page after successful registration
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');

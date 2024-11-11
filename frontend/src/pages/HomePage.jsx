@@ -1,19 +1,18 @@
 // src/pages/HomePage.jsx
-
-import React, { useState } from 'react';
+import React from 'react';
+import { useAuth } from '../context/AuthContext'; // To access authentication context
 import Navbar from '../components/Navbar';
 
 function HomePage() {
-  const [loggedIn, setLoggedIn] = useState(true);
-
+  const { isAuthenticated, logout } = useAuth(); // Access authentication context
   const handleLogout = () => {
-    setLoggedIn(false);
+    logout(); // Handle logout logic here
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-900 text-white">
       {/* Navbar */}
-      <Navbar loggedIn={loggedIn} onLogout={handleLogout} />
+      <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
 
       <div className="flex flex-grow">
         {/* Sidebar */}

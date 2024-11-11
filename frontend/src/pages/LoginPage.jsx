@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import backgroundImage from '../assets/bg.jpg'; // Update the path to your background image
 
 function LoginPage() {
+  const { login } = useAuth();  // Get the login function from context
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -19,7 +21,8 @@ function LoginPage() {
         withCredentials: true,
       });
       if (response.status === 200) {
-        navigate('/');
+        login(); // Update authentication state
+        navigate('/'); // Redirect to the profile page
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

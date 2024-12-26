@@ -1,44 +1,79 @@
-// src/pages/ProfilePage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-function ProfilePage() {
+const ProfilePage = () => {
+  const [user, setUser] = useState(null); // Store user data
+  const [error, setError] = useState(null); // Store error
+  const [loading, setLoading] = useState(true); // Handle loading state
+
+  useEffect(() => {
+    // Fetch user data from the server
+    axios.get('/api/v1/users/me', { withCredentials: true })
+      .then(response => {
+        setUser(response.data.data); // Store user data
+        setLoading(false); // Set loading to false
+      })
+      .catch(err => {
+        console.error('Error fetching user details:', err);
+        setError('Failed to load user data');
+        setLoading(false); // Set loading to false even if there's an error
+      });
+  }, []);
+
+  // If the data is loading, show a loading spinner or message
+  if (loading) {
+    return (
+      <div className="text-center text-xl">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-t-blue-500 border-solid"></div>
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // If there is an error, show the error message
+  if (error) {
+    return <div className="text-center text-red-600">{error}</div>;
+  }
+
+  // If no user data exists, show a message
+  if (!user) {
+    return <div className="text-center text-xl">User not found.</div>;
+  }
+
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-800 p-4 space-y-2">
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">Home</button>
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">Liked Videos</button>
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">History</button>
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">My Content</button>
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">Collections</button>
-        <button className="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600">Subscribers</button>
-      </aside>
-
-      {/* Main Profile Section */}
-      <div className="flex-1 p-6">
-        <div className="flex items-center space-x-4 mb-4">
-          <img src="https://via.placeholder.com/100" alt="Profile" className="rounded-full w-20 h-20" />
+    <div className="container mx-auto p-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold mb-6">Profile</h1>
+        
+        <div className="space-y-4">
           <div>
-            <h1 className="text-2xl font-bold">React Patterns</h1>
-            <p>600k Subscribers · 220 Subscribed</p>
+            <h2 className="text-xl font-medium">Name:</h2>
+            <p>{user.name}</p>
           </div>
-        </div>
-        <div className="border-b border-gray-700 mb-4">
-          <button className="px-4 py-2 text-purple-400 border-b-2 border-purple-400">Videos</button>
-          <button className="px-4 py-2 text-gray-400">Playlist</button>
-          <button className="px-4 py-2 text-gray-400">Tweets</button>
-          <button className="px-4 py-2 text-gray-400">Subscribed</button>
-        </div>
+          
+          <div>
+            <h2 className="text-xl font-medium">Email:</h2>
+            <p>{user.email}</p>
+          </div>
 
-        {/* No Videos Message */}
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-gray-500">No videos uploaded</p>
-          <p className="text-gray-500 mb-4">This page has yet to upload a video.</p>
-          <button className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700 transition">+ New video</button>
+          {/* Example of user data map if user has additional data */}
+          {user.posts && user.posts.length > 0 && (
+            <div>
+              <h2 className="text-xl font-medium">Your Posts:</h2>
+              <ul>
+                {user.posts.map(post => (
+                  <li key={post.id} className="border-b py-2">
+                    <h3 className="font-semibold">{post.title}</h3>
+                    <p>{post.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default ProfilePage;
